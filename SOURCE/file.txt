@@ -1,0 +1,4 @@
+char c;
+    FILE *plik=fopen("pio0.in","r");
+
+    fscanf(plik, "%d%c", &n, &c);

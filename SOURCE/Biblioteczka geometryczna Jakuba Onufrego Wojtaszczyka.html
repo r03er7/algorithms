@@ -1,0 +1,765 @@
+
+<!-- saved from url=(0074)http://was.zaa.mimuw.edu.pl/sites/default/files/file/s2009-w19/geom2d.html -->
+<HTML><HEAD><META http-equiv="Content-Type" content="text/html; charset=ISO-8859-2"></HEAD><BODY><H1>Biblioteczka geometryczna Jakuba Onufrego Wojtaszczyka</H1><PRE><FONT color="green">//<I> V 1.04, 8.VI</I></FONT>
+<FONT color="green">//<I> ** Zasady korzystania **</I></FONT>
+<FONT color="green">//<I>    - nie wykorzystujemy na konkursach, gdzie kod musi byc autorski (np. TopCoder)</I></FONT>
+<FONT color="green">//<I>    - nie linkujemy bez mojej (Onufrego) wiedzy</I></FONT>
+#include &lt;cstdio&gt;
+#include &lt;iostream&gt;
+#include &lt;algorithm&gt;
+#include &lt;iterator&gt;
+#include &lt;cassert&gt;
+#include &lt;map&gt;
+#include &lt;queue&gt;
+#include &lt;set&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+#include &lt;cmath&gt;
+using namespace std;
+typedef <FONT color="blue"><B>long</B></FONT> long LL;
+typedef <FONT color="blue"><B>long</B></FONT> double <FONT color="blue"><B>ld</B></FONT>;
+typedef pair&lt;int,int&gt; PII;
+typedef vector&lt;int&gt; VI;
+#define MP make_pair
+#define FOR(v,p,k) <FONT color="blue"><B>for</B></FONT>(<FONT color="blue"><B>int</B></FONT> v=p;v&lt;=k;++v)
+#define FORD(v,p,k) <FONT color="blue"><B>for</B></FONT>(<FONT color="blue"><B>int</B></FONT> v=p;v&gt;=k;--v)
+#define REP(i,n) <FONT color="blue"><B>for</B></FONT>(<FONT color="blue"><B>int</B></FONT> i=0;i&lt;(n);++i)
+#define VAR(v,i) __typeof(i) v=(i)
+#define FOREACH(i,c) <FONT color="blue"><B>for</B></FONT>(VAR(i,(c).begin());i!=(c).end();++i)
+#define PB push_back
+#define ST first
+#define ND second
+#define SIZE(x) (<FONT color="blue"><B>int</B></FONT>)x.size()
+#define ALL(c) c.begin(),c.end()
+
+#define PI (2 * asinl(1))
+#define EPS 0.00000001
+
+#define X s[0]
+#define Y s[1]
+#define DIM 2
+#define SQR(x) ((x)*(x))
+
+typedef <FONT color="blue"><B>long</B></FONT> double <FONT color="blue"><B>ld</B></FONT>;
+<FONT color="blue"><B>inline</B></FONT> <FONT color="blue"><B>ld</B></FONT> gd(<FONT color="blue"><B>ld</B></FONT> &amp;x) {scanf("%Lf",&amp;x); <FONT color="blue"><B>return</B></FONT> x;}
+<FONT color="blue"><B>inline</B></FONT> <FONT color="blue"><B>void</B></FONT> pd(<FONT color="blue"><B>ld</B></FONT> x) {printf("%Lf",x);}
+
+<FONT color="blue"><B>inline</B></FONT> <FONT color="blue"><B>int</B></FONT> iszero(<FONT color="blue"><B>ld</B></FONT> x) {
+  <FONT color="blue"><B>return</B></FONT> (x &lt; EPS) &amp;&amp; (x &gt; -EPS);
+}
+
+typedef <FONT color="blue"><B>struct</B></FONT> {
+  <FONT color="blue"><B>ld</B></FONT> s[DIM];
+} <FONT color="blue"><B>pt</B></FONT>; <FONT color="green">//<I> Point - punkt</I></FONT>
+
+
+typedef <FONT color="blue"><B>struct</B></FONT> {
+  <FONT color="blue"><B>pt</B></FONT> O;
+  <FONT color="blue"><B>pt</B></FONT> dir;
+} <FONT color="blue"><B>lin</B></FONT>; <FONT color="green">//<I> Line - prosta</I></FONT>
+
+typedef <FONT color="blue"><B>struct</B></FONT> {
+  <FONT color="blue"><B>pt</B></FONT> A;
+  <FONT color="blue"><B>pt</B></FONT> B;
+} <FONT color="blue"><B>seg</B></FONT>; <FONT color="green">//<I> Segment - odcinek</I></FONT>
+
+typedef <FONT color="blue"><B>struct</B></FONT> {
+  <FONT color="blue"><B>pt</B></FONT> O;
+  <FONT color="blue"><B>ld</B></FONT> R;
+} <FONT color="blue"><B>circ</B></FONT>; <FONT color="green">//<I> Circle - okrag</I></FONT>
+
+<FONT color="blue"><B>inline</B></FONT> <FONT color="blue"><B>pt</B></FONT> operator+ (<FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>pt</B></FONT> &amp;A, <FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>pt</B></FONT> &amp;B) {
+  <FONT color="blue"><B>pt</B></FONT> res;
+  res.X = A.X + B.X;
+  res.Y = A.Y + B.Y;
+  <FONT color="blue"><B>return</B></FONT> res;
+}
+
+<FONT color="blue"><B>inline</B></FONT> <FONT color="blue"><B>pt</B></FONT> operator- (<FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>pt</B></FONT> &amp;A, <FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>pt</B></FONT> &amp;B) {
+  <FONT color="blue"><B>pt</B></FONT> res;
+  res.X = A.X - B.X;
+  res.Y = A.Y - B.Y;
+  <FONT color="blue"><B>return</B></FONT> res;
+}
+
+<FONT color="blue"><B>inline</B></FONT> <FONT color="blue"><B>pt</B></FONT> operator* (<FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>ld</B></FONT> &amp;lam, <FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>pt</B></FONT> &amp;A) {
+  <FONT color="blue"><B>pt</B></FONT> res;
+  res.X = lam * A.X;
+  res.Y = lam * A.Y;
+  <FONT color="blue"><B>return</B></FONT> res;
+}
+
+<FONT color="blue"><B>inline</B></FONT> <FONT color="blue"><B>bool</B></FONT> operator== (<FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>pt</B></FONT> &amp;A, <FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>pt</B></FONT> &amp;B) {
+  REP (i, DIM) <FONT color="blue"><B>if</B></FONT> (!iszero(A.s[i] - B.s[i])) <FONT color="blue"><B>return</B></FONT> 0;
+  <FONT color="blue"><B>return</B></FONT> 1; 
+}
+
+<FONT color="blue"><B>inline</B></FONT> <FONT color="blue"><B>void</B></FONT> ppt (<FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>pt</B></FONT> &amp;A) {pd(A.X);printf(" ");pd(A.Y);printf(" ");}
+<FONT color="blue"><B>inline</B></FONT> <FONT color="blue"><B>void</B></FONT> pptn (<FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>pt</B></FONT> &amp;A) {ppt(A); printf("\n");}
+<FONT color="blue"><B>inline</B></FONT> <FONT color="blue"><B>void</B></FONT> plin (<FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>lin</B></FONT> &amp;A) {printf("["); ppt(A.O); printf(", "); ppt(A.O + A.dir); printf("] ");}
+<FONT color="blue"><B>inline</B></FONT> <FONT color="blue"><B>void</B></FONT> plinn (<FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>lin</B></FONT> &amp;A) {plin(A); printf("\n");}
+<FONT color="blue"><B>inline</B></FONT> <FONT color="blue"><B>void</B></FONT> pcirc (<FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>circ</B></FONT> &amp;C) {printf("[("); ppt(C.O); printf(") "); printf("%Lf] ", C.R);}
+<FONT color="blue"><B>inline</B></FONT> <FONT color="blue"><B>void</B></FONT> pcircn (<FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>circ</B></FONT> &amp;C) {pcirc(C); printf("\n");}
+
+<FONT color="blue"><B>inline</B></FONT> <FONT color="blue"><B>pt</B></FONT> mpt (<FONT color="blue"><B>ld</B></FONT> x, <FONT color="blue"><B>ld</B></FONT> y) {
+  <FONT color="blue"><B>pt</B></FONT> res;
+  res.X = x;
+  res.Y = y;
+  <FONT color="blue"><B>return</B></FONT> res;
+}
+
+<FONT color="blue"><B>inline</B></FONT> <FONT color="blue"><B>lin</B></FONT> mlin (<FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>pt</B></FONT> &amp;A, <FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>pt</B></FONT> &amp;B) {
+  <FONT color="blue"><B>lin</B></FONT> res;
+  res.O = A;
+  res.dir = B - A;
+  <FONT color="blue"><B>return</B></FONT> res;
+}
+
+<FONT color="blue"><B>inline</B></FONT> <FONT color="blue"><B>seg</B></FONT> mseg (<FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>pt</B></FONT> &amp;A, <FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>pt</B></FONT> &amp;B) {
+  <FONT color="blue"><B>seg</B></FONT> res;
+  res.A = A;
+  res.B = B;
+  <FONT color="blue"><B>return</B></FONT> res;
+}
+
+<FONT color="blue"><B>inline</B></FONT> <FONT color="blue"><B>circ</B></FONT> mcirc (<FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>pt</B></FONT> &amp;A, <FONT color="blue"><B>ld</B></FONT> R) {
+  <FONT color="blue"><B>circ</B></FONT> res;
+  res.O = A;
+  res.R = R;
+  <FONT color="blue"><B>return</B></FONT> res;
+}
+
+<FONT color="blue"><B>inline</B></FONT> <FONT color="blue"><B>ld</B></FONT> cp (<FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>pt</B></FONT> &amp;A, <FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>pt</B></FONT> &amp;B) { <FONT color="green">//<I> 2D</I></FONT>
+  <FONT color="blue"><B>return</B></FONT> A.X * B.Y - A.Y * B.X;
+}
+
+<FONT color="green">//<I> 1 - punkt na prawo od prostej, losowo kiedy punkt na prostej</I></FONT>
+<FONT color="blue"><B>inline</B></FONT> <FONT color="blue"><B>int</B></FONT> na_prawo (<FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>pt</B></FONT> &amp;A, <FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>lin</B></FONT> &amp;L) {
+  <FONT color="blue"><B>if</B></FONT> (cp(A-L.O, L.dir) &gt; 0.) <FONT color="blue"><B>return</B></FONT> 1; <FONT color="blue"><B>return</B></FONT> 0;
+}
+
+<FONT color="blue"><B>inline</B></FONT> <FONT color="blue"><B>ld</B></FONT> is (<FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>pt</B></FONT> &amp;A, <FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>pt</B></FONT> &amp;B) {
+  <FONT color="blue"><B>return</B></FONT> A.X * B.X + A.Y * B.Y;
+}
+
+/* Przeciecie dwoch prostych - algorytm Malcina 
+   Skala to stosunek pola trojkata do pola czworokata 
+   Dla pokrywajacych sie prostych zwraca "nie" */
+
+<FONT color="blue"><B>int</B></FONT> intersect_lin_lin (<FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>lin</B></FONT> &amp;K, <FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>lin</B></FONT> &amp;L, <FONT color="blue"><B>pt</B></FONT> &amp;res) { <FONT color="green">//<I> 2D</I></FONT>
+  <FONT color="blue"><B>if</B></FONT> (abs(cp(K.dir, L.dir)) &lt; EPS) <FONT color="blue"><B>return</B></FONT> 0; 
+  <FONT color="blue"><B>ld</B></FONT> s = cp(K.dir, K.O - L.O) / cp (K.dir, L.dir);
+  res = L.O + s * L.dir;
+  <FONT color="blue"><B>return</B></FONT> 1;
+}
+
+/*
+<FONT color="blue"><B>int</B></FONT> main() {
+  <FONT color="blue"><B>pt</B></FONT> res;
+  <FONT color="blue"><B>lin</B></FONT> K = mlin(mpt(1,3), mpt(2,5));
+  <FONT color="blue"><B>lin</B></FONT> L = mlin(mpt(5,4), mpt(1,10));
+  printf("%d ", intersect_lin_lin(K,L,res));
+  pptn(res);
+  <FONT color="blue"><B>return</B></FONT> 0;
+}
+*/
+
+<FONT color="green">//<I> Sprawdza nierownosc trojkata dla trzech liczb</I></FONT>
+<FONT color="green">//<I> -1: nie zachodzi, 0: zachodzi rownosc (punkty wspolliniowe), 1: zachodzi ostra.</I></FONT>
+<FONT color="blue"><B>int</B></FONT> triangle (<FONT color="blue"><B>ld</B></FONT> x, <FONT color="blue"><B>ld</B></FONT> y, <FONT color="blue"><B>ld</B></FONT> z) {
+  <FONT color="blue"><B>if</B></FONT> (x &lt; y) {<FONT color="blue"><B>ld</B></FONT> t; t=x; x=y; y=t;}
+  <FONT color="blue"><B>if</B></FONT> (z &lt; x) {<FONT color="blue"><B>ld</B></FONT> t; t=x; x=z; z=t;}
+  <FONT color="blue"><B>if</B></FONT> (iszero(z-x-y)) <FONT color="blue"><B>return</B></FONT> 0;
+  <FONT color="blue"><B>if</B></FONT> (z-x-y &lt; 0) <FONT color="blue"><B>return</B></FONT> 1;
+  <FONT color="blue"><B>return</B></FONT> -1;
+}
+
+<FONT color="green"><I>/* Obrot wzgledem (0,0) przeciwny do wskazowek zegara */</I></FONT>
+<FONT color="blue"><B>pt</B></FONT> rotate_origin (<FONT color="blue"><B>ld</B></FONT> theta, <FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>pt</B></FONT> &amp;A) { 
+  <FONT color="blue"><B>pt</B></FONT> res;
+  <FONT color="blue"><B>ld</B></FONT> si = sinl(theta);
+  <FONT color="blue"><B>ld</B></FONT> co = cosl(theta);
+  res.X = A.X * co - A.Y * si;
+  res.Y = A.X * si + A.Y * co;
+  <FONT color="blue"><B>return</B></FONT> res;
+}
+
+<FONT color="green"><I>/* Dowolny obrot */</I></FONT>
+<FONT color="blue"><B>pt</B></FONT> rotate (<FONT color="blue"><B>ld</B></FONT> theta, <FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>pt</B></FONT> &amp;A, <FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>pt</B></FONT> &amp;O) { 
+  <FONT color="blue"><B>return</B></FONT> O + rotate_origin(theta, A-O);
+}
+
+<FONT color="green"><I>/* Obrot o 90 wzgledem srodka, przeciwnie do wskazowek */</I></FONT>
+<FONT color="blue"><B>inline</B></FONT> <FONT color="blue"><B>pt</B></FONT> rotate_90_origin (<FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>pt</B></FONT> &amp;A) {
+  <FONT color="blue"><B>return</B></FONT> mpt(-A.Y, A.X);
+}
+
+<FONT color="green"><I>/* Obrot o 90 stopni, dla wydajnosci i dokladnosci, przeciwnie do wskazowek */</I></FONT>
+<FONT color="blue"><B>pt</B></FONT> rotate_90 (<FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>pt</B></FONT> &amp;A, <FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>pt</B></FONT> &amp;O) {
+  <FONT color="blue"><B>return</B></FONT> rotate_90_origin(A-O) + O;
+}
+
+/* <FONT color="blue"><B>int</B></FONT> main() {
+  <FONT color="blue"><B>pt</B></FONT> O = mpt(2,3);
+  <FONT color="blue"><B>pt</B></FONT> A = mpt(2,6);
+  A = rotate(PI / 6.0, A, O);
+  pptn(A);
+  <FONT color="blue"><B>return</B></FONT> 0;
+} */
+
+<FONT color="green">//<I> Kat &lt;AOB skierowany przeciwnie do wskazowek, w [0,2PI]</I></FONT>
+<FONT color="blue"><B>ld</B></FONT> angle (<FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>pt</B></FONT> &amp;A, <FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>pt</B></FONT> &amp;O, <FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>pt</B></FONT> &amp;B) {
+  <FONT color="blue"><B>ld</B></FONT> res = atan2l((B-O).Y, (B-O).X) - atan2l((A-O).Y, (A-O).X);
+  <FONT color="blue"><B>if</B></FONT> (res &lt; 0) res += 2.*PI;
+  <FONT color="blue"><B>return</B></FONT> res;
+}
+
+<FONT color="green">//<I> Kat skierowany miedzy prostymi skierowanymi</I></FONT>
+<FONT color="blue"><B>ld</B></FONT> angle (<FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>lin</B></FONT> &amp;K, <FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>lin</B></FONT> &amp;L) {
+  <FONT color="blue"><B>return</B></FONT> angle(K.dir, mpt(0,0), L.dir);
+}
+
+
+<FONT color="green">//<I> Rzut punktu na prosta</I></FONT>
+<FONT color="blue"><B>pt</B></FONT> rzut (<FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>pt</B></FONT> &amp;A, <FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>lin</B></FONT> &amp;L) {
+  <FONT color="blue"><B>return</B></FONT> (is(A - L.O,L.dir) / is(L.dir,L.dir)) * L.dir + L.O;
+}
+
+/*
+<FONT color="blue"><B>int</B></FONT> main () {
+  <FONT color="blue"><B>pt</B></FONT> A = mpt(2.5,1.5);
+  <FONT color="blue"><B>lin</B></FONT> L = mlin(mpt(0,0), mpt(2,8));
+  pptn(rzut(A,L));
+  <FONT color="blue"><B>return</B></FONT> 0;
+}
+*/
+
+<FONT color="green">//<I> Rownoleglosc wektorow</I></FONT>
+<FONT color="blue"><B>int</B></FONT> parallel (<FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>pt</B></FONT> &amp;A, <FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>pt</B></FONT> &amp;B) {
+  <FONT color="blue"><B>return</B></FONT> iszero(cp(A,B));
+}
+
+<FONT color="green">//<I> Rownoleglosc prostych</I></FONT>
+<FONT color="blue"><B>int</B></FONT> parallel (<FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>lin</B></FONT> &amp;K, <FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>lin</B></FONT> &amp;L) {
+  <FONT color="blue"><B>return</B></FONT> parallel(K.dir, L.dir);
+}
+
+<FONT color="green">//<I> Prosta prostopadla do wektora przez dany punkt </I></FONT>
+<FONT color="blue"><B>lin</B></FONT> perp (<FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>pt</B></FONT> &amp;A, <FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>pt</B></FONT> &amp;D) {
+  <FONT color="blue"><B>return</B></FONT> mlin(A, A + mpt(D.Y, -D.X));
+}
+
+<FONT color="green">//<I> Lezy pomiedzy, i na tej samej prostej.</I></FONT>
+<FONT color="blue"><B>int</B></FONT> between (<FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>pt</B></FONT> &amp;A, <FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>pt</B></FONT> &amp;M, <FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>pt</B></FONT> &amp;B) {
+  <FONT color="blue"><B>if</B></FONT> (!parallel(M-A,B-A)) <FONT color="blue"><B>return</B></FONT> 0;
+  <FONT color="blue"><B>return</B></FONT> (is(M-A,M-B) &lt; EPS);
+}
+
+<FONT color="green">//<I> Przeciecie punktu z odcinkiem</I></FONT>
+<FONT color="green">//<I> Zwraca "nie" dla odcinka pokrywajacego sie z prosta, w tym jednopunktowego</I></FONT>
+<FONT color="blue"><B>int</B></FONT> intersect_lin_seg (<FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>lin</B></FONT> &amp;L, <FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>seg</B></FONT> &amp;I, <FONT color="blue"><B>pt</B></FONT> &amp;W) {
+  <FONT color="blue"><B>if</B></FONT> (!intersect_lin_lin(L, mlin(I.A,I.B),W)) <FONT color="blue"><B>return</B></FONT> 0;
+  <FONT color="blue"><B>if</B></FONT> (between(I.A,W,I.B)) <FONT color="blue"><B>return</B></FONT> 1; <FONT color="blue"><B>return</B></FONT> 0;
+}
+
+/*
+<FONT color="blue"><B>int</B></FONT> main() {
+  <FONT color="blue"><B>lin</B></FONT> L = mlin(mpt(1,2), mpt(2,3));
+  <FONT color="blue"><B>seg</B></FONT> I[4];
+  I[0] = mseg(mpt(2,0), mpt(0,2));
+  I[1] = mseg(mpt(0,0), mpt(3,0));
+  I[2] = mseg(mpt(0,5), mpt(9,5));
+  I[3] = mseg(mpt(3,4), mpt(7,7));
+  <FONT color="blue"><B>pt</B></FONT> W;
+  REP (i, 4) {
+    <FONT color="blue"><B>int</B></FONT> r;
+    printf("%d ", r = intersect_lin_seg(L, I[i], W));
+    <FONT color="blue"><B>if</B></FONT> (r) pptn(W); else printf("\n");
+  }
+  <FONT color="blue"><B>return</B></FONT> 0;
+}
+*/
+
+<FONT color="green">//<I> Przeciecie dwoch odcinkow</I></FONT>
+<FONT color="green">//<I> Zastrzezenia jak przy lin_seg</I></FONT>
+<FONT color="blue"><B>int</B></FONT> intersect_seg_seg (<FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>seg</B></FONT> &amp;I, <FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>seg</B></FONT> &amp;J, <FONT color="blue"><B>pt</B></FONT> &amp;W) {
+  <FONT color="blue"><B>if</B></FONT> (!intersect_lin_lin(mlin(I.A,I.B), mlin(J.A,J.B), W)) <FONT color="blue"><B>return</B></FONT> 0;
+  <FONT color="blue"><B>if</B></FONT> (between(I.A,W,I.B) &amp;&amp; between(J.A,W,J.B)) <FONT color="blue"><B>return</B></FONT> 1; <FONT color="blue"><B>return</B></FONT> 0;
+}
+
+<FONT color="green">//<I> Punkt na prostej</I></FONT>
+<FONT color="blue"><B>int</B></FONT> online (<FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>lin</B></FONT> &amp;L, <FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>pt</B></FONT> &amp;A) {
+  <FONT color="blue"><B>return</B></FONT> (is(A-L.O,A-L.O) &lt; EPS) || parallel(L.dir, A-L.O);
+}
+
+<FONT color="blue"><B>ld</B></FONT> lgt (<FONT color="blue"><B>pt</B></FONT> A) {
+  <FONT color="blue"><B>return</B></FONT> sqrt(is(A,A));
+}
+
+<FONT color="blue"><B>ld</B></FONT> dist (<FONT color="blue"><B>pt</B></FONT> A, <FONT color="blue"><B>pt</B></FONT> B) {
+  <FONT color="blue"><B>return</B></FONT> lgt(A-B);
+}
+
+<FONT color="green"><I>/* Funkcje na kolach */</I></FONT>
+
+<FONT color="blue"><B>inline</B></FONT> <FONT color="blue"><B>int</B></FONT> on_circ(<FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>pt</B></FONT> &amp;A, <FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>circ</B></FONT> &amp;C) {
+  <FONT color="blue"><B>return</B></FONT> (iszero(dist(A,C.O) - C.R));
+}
+
+<FONT color="green">//<I> zapewnia is(K.dir, W1-W2) &gt;= 0) jeśli zwraca dwa punkty</I></FONT>
+<FONT color="blue"><B>int</B></FONT> intersect_lin_circ (<FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>lin</B></FONT> &amp;K, <FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>circ</B></FONT> &amp;C, <FONT color="blue"><B>pt</B></FONT> &amp;W1, <FONT color="blue"><B>pt</B></FONT> &amp;W2) {
+  <FONT color="blue"><B>pt</B></FONT> M = rzut(C.O, K);
+	<FONT color="blue"><B>if</B></FONT> (on_circ(M, C)) {W1 = M; <FONT color="blue"><B>return</B></FONT> 1;}
+  <FONT color="blue"><B>ld</B></FONT> dao = dist(M,C.O);
+  <FONT color="blue"><B>if</B></FONT> (dao &gt; C.R) <FONT color="blue"><B>return</B></FONT> 0;
+  <FONT color="blue"><B>if</B></FONT> (dao &lt; EPS) {
+    W1 = C.O + (C.R / lgt(K.dir)) * K.dir;
+    W2 = C.O - (C.R / lgt(K.dir)) * K.dir;
+    <FONT color="blue"><B>return</B></FONT> 2;
+  }
+  <FONT color="blue"><B>ld</B></FONT> theta = acosl(dao / C.R);
+  M = (C.R / dao) * (M - C.O) + C.O;
+  W1 = rotate(theta,M,C.O);
+  W2 = rotate(-theta,M,C.O);
+	<FONT color="blue"><B>if</B></FONT> (is(K.dir, W2-W1) &lt; -EPS) {M = W1; W1 = W2; W2 = M;}
+  <FONT color="blue"><B>return</B></FONT> 2;
+}
+
+/*
+<FONT color="blue"><B>int</B></FONT> main() {
+  <FONT color="blue"><B>circ</B></FONT> O = mcirc(mpt(2,1), 5);
+  <FONT color="blue"><B>lin</B></FONT> L = mlin(mpt(0,4), mpt(1,4));
+  <FONT color="blue"><B>pt</B></FONT> R1, R2;
+  printf("%d: ", intersect_lin_circ(L, O, R1, R2));
+  ppt(R1);
+  pptn(R2);
+  <FONT color="blue"><B>return</B></FONT> 0;
+}
+*/
+
+<FONT color="green">//<I> Styczne do okregu przez dany punkt</I></FONT>
+<FONT color="green">//<I> W1 i W2 to punkty stycznosci, kat W1 O W2 jest skierowany przeciwnie do wskazowek zegara.</I></FONT>
+<FONT color="blue"><B>int</B></FONT> tangent_point (<FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>pt</B></FONT> &amp;A, <FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>circ</B></FONT> &amp;C, <FONT color="blue"><B>lin</B></FONT> &amp;W1, <FONT color="blue"><B>lin</B></FONT> &amp;W2) { 
+  <FONT color="blue"><B>if</B></FONT> (on_circ(A,C)) { <FONT color="green">//<I> Styczna przez punkt na okregu jest styczna w tym punkcie</I></FONT>
+    W1 = perp(A, C.O - A);
+    <FONT color="blue"><B>return</B></FONT> 1;
+  }
+  <FONT color="blue"><B>ld</B></FONT> dao = dist(A,C.O);
+  <FONT color="blue"><B>if</B></FONT> (dao &lt;= C.R) <FONT color="blue"><B>return</B></FONT> 0;
+  <FONT color="blue"><B>ld</B></FONT> theta = asinl(C.R / dao);
+  <FONT color="blue"><B>pt</B></FONT> temp = (sqrt(SQR(dao) - SQR(C.R)) / dao) * (C.O - A) + A;
+  W2 = mlin(A, rotate(theta, temp, A));
+  W1 = mlin(A, rotate(-theta, temp, A));
+  <FONT color="blue"><B>return</B></FONT> 2;
+}
+
+/*
+<FONT color="blue"><B>int</B></FONT> main() {
+  <FONT color="blue"><B>circ</B></FONT> C = mcirc(mpt(0,0),20);
+  <FONT color="blue"><B>pt</B></FONT> P = mpt(0,25);
+  <FONT color="blue"><B>lin</B></FONT> R1, R2;
+  <FONT color="blue"><B>int</B></FONT> r = tangent_point(P,C,R1,R2);
+  printf("%d", r);
+  <FONT color="blue"><B>if</B></FONT> (r) plin(R1);
+  <FONT color="blue"><B>if</B></FONT> (r&gt;1) plin(R2);
+  printf("\n");
+  <FONT color="blue"><B>return</B></FONT> 0;
+}
+*/
+
+<FONT color="green">//<I> Przeciecie dwoch okregow</I></FONT>
+<FONT color="green">//<I> Supportuje okregi styczne, zwraca liczbe punktow w wyniku</I></FONT>
+<FONT color="green">//<I> Luk W2 C1.O W1 (przeciw wskazowkom zegara) jest zawarty w kole C2.</I></FONT>
+<FONT color="green">//<I> Zwraca -1, kiedy koła się pokrywają.</I></FONT>
+<FONT color="blue"><B>int</B></FONT> intersect_circ_circ (<FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>circ</B></FONT> &amp;C1, <FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>circ</B></FONT> &amp;C2, <FONT color="blue"><B>pt</B></FONT> &amp;W1, <FONT color="blue"><B>pt</B></FONT> &amp;W2) {
+  <FONT color="blue"><B>ld</B></FONT> doo = dist(C1.O, C2.O);
+  <FONT color="blue"><B>if</B></FONT> (triangle(doo, C1.R, C2.R) == -1) <FONT color="blue"><B>return</B></FONT> 0;
+	<FONT color="blue"><B>if</B></FONT> (doo &lt; EPS) <FONT color="blue"><B>return</B></FONT> -1;
+  <FONT color="blue"><B>if</B></FONT> (triangle(doo, C1.R, C2.R) == 0 ) { <FONT color="green">//<I> P.p. okr. stycznych na prostej laczacej srodki</I></FONT>
+    intersect_lin_circ(mlin(C1.O, C2.O), C1, W1, W2);
+    <FONT color="blue"><B>if</B></FONT> (on_circ(W2,C2)) W1 = W2;
+    <FONT color="blue"><B>return</B></FONT> 1;
+  }
+	<FONT color="green">//<I> Teraz tw. cosinusow dla trojkata C1.O, C2.O i punktu przeciecia</I></FONT>
+  <FONT color="blue"><B>ld</B></FONT> alpha = acos((SQR(C1.R) - SQR(C2.R) + SQR(doo)) / (2.0 * C1.R * doo)); 
+  <FONT color="blue"><B>pt</B></FONT> start = C1.O + (C1.R / doo) * (C2.O - C1.O);
+  W1 = rotate(alpha, start, C1.O);
+  W2 = rotate(-alpha, start, C1.O);
+  <FONT color="blue"><B>return</B></FONT> 2;
+}
+
+/*
+<FONT color="blue"><B>int</B></FONT> main() {
+  <FONT color="blue"><B>circ</B></FONT> B = mcirc(mpt(0,0),5);
+  <FONT color="blue"><B>circ</B></FONT> A = mcirc(mpt(0,4),3);
+  <FONT color="blue"><B>pt</B></FONT> R1, R2;
+  intersect_circ_circ(A,B,R1,R2);
+  ppt(R1); pptn(R2);
+}
+*/
+
+<FONT color="green">//<I> Pole odcinka kola na lewo od zadanej prostej</I></FONT>
+<FONT color="green">//<I> Nieskierowane!</I></FONT>
+<FONT color="blue"><B>ld</B></FONT> circ_segment_area(<FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>circ</B></FONT> &amp;C, <FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>lin</B></FONT> &amp;L) {
+	<FONT color="blue"><B>pt</B></FONT> A, B;
+	<FONT color="blue"><B>if</B></FONT> (intersect_lin_circ(L,C,A,B) &lt; 2) {
+		<FONT color="blue"><B>if</B></FONT> (na_prawo(C.O, L)) <FONT color="blue"><B>return</B></FONT> 0.; 
+		<FONT color="blue"><B>return</B></FONT> PI * C.R * C.R;
+	}
+	<FONT color="blue"><B>return</B></FONT> (angle(A, C.O, B) * SQR(C.R) - cp(A-C.O,B-C.O)) / 2.;
+}
+
+<FONT color="green">//<I> Pole przeciecia dwoch kol</I></FONT>
+<FONT color="green">//<I> Nieskierowane!</I></FONT>
+<FONT color="blue"><B>ld</B></FONT> circ_circ_area(<FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>circ</B></FONT> &amp;C1, <FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>circ</B></FONT> &amp;C2) {
+	<FONT color="blue"><B>ld</B></FONT> dao = dist(C1.O, C2.O);
+	<FONT color="blue"><B>if</B></FONT> (C1.R + C2.R &lt; dao + EPS) <FONT color="blue"><B>return</B></FONT> 0.;
+	<FONT color="blue"><B>if</B></FONT> (C1.R + dao &lt; C2.R + EPS) <FONT color="blue"><B>return</B></FONT> PI * SQR(C1.R);
+	<FONT color="blue"><B>if</B></FONT> (C2.R + dao &lt; C1.R + EPS) <FONT color="blue"><B>return</B></FONT> PI * SQR(C2.R);
+	<FONT color="blue"><B>pt</B></FONT> A, B;
+	assert(intersect_circ_circ(C1,C2,A,B) == 2);
+	<FONT color="blue"><B>return</B></FONT> circ_segment_area(C1, mlin(B,A)) + circ_segment_area(C2, mlin(A,B));
+}
+
+<FONT color="green">//<I> Okrag z trzech punktow</I></FONT>
+<FONT color="blue"><B>int</B></FONT> three_points (<FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>pt</B></FONT> &amp;A, <FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>pt</B></FONT> &amp;B, <FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>pt</B></FONT> &amp;C, <FONT color="blue"><B>circ</B></FONT> &amp;R) {
+  <FONT color="blue"><B>if</B></FONT> (!intersect_lin_lin(perp(0.5 * (A+B), B-A), perp(0.5 * (A+C), C-A), R.O)) 
+    <FONT color="blue"><B>return</B></FONT> 0;
+  R.R = dist(R.O, A);
+  <FONT color="blue"><B>return</B></FONT> 1;
+}
+
+<FONT color="green">//<I> Styczna wewnetrzna do dwoch okregow</I></FONT>
+<FONT color="green">//<I> Zwraca proste styczne</I></FONT>
+<FONT color="green">//<I> Wywala sie jak oba okregi sa zdegenerowane</I></FONT>
+<FONT color="blue"><B>int</B></FONT> internal_tangent(<FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>circ</B></FONT> &amp;C1, <FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>circ</B></FONT> &amp;C2, <FONT color="blue"><B>lin</B></FONT> &amp;W1, <FONT color="blue"><B>lin</B></FONT> &amp;W2) {
+  <FONT color="blue"><B>pt</B></FONT> mid = (C1.R / (C1.R + C2.R)) * C2.O + (C2.R / (C1.R + C2.R)) * C1.O;
+  <FONT color="blue"><B>return</B></FONT> tangent_point(mid, C1, W1, W2);
+}
+
+<FONT color="green">//<I> Styczne zewnetrzne do okregow</I></FONT>
+<FONT color="green">//<I> Zwraca proste styczne</I></FONT>
+<FONT color="green">//<I> Zwraca zero, gdy okregi sie nakladaja</I></FONT>
+<FONT color="blue"><B>int</B></FONT> external_tangent(<FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>circ</B></FONT> &amp;C1, <FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>circ</B></FONT> &amp;C2, <FONT color="blue"><B>lin</B></FONT> &amp;W1, <FONT color="blue"><B>lin</B></FONT> &amp;W2) {
+  <FONT color="blue"><B>if</B></FONT> (iszero(C1.R - C2.R)) {
+    <FONT color="blue"><B>if</B></FONT> (iszero(dist(C1.O,C2.O))) <FONT color="blue"><B>return</B></FONT> 0;
+    <FONT color="blue"><B>pt</B></FONT> start = C1.O + ((C1.R / dist(C1.O,C2.O)) * rotate_90_origin(C2.O - C1.O));
+    W1 = mlin(start, start + C2.O - C1.O);
+    W2 = mlin(C1.O + C1.O - start, C1.O + C2.O - start);
+    <FONT color="blue"><B>return</B></FONT> 2;
+  }
+  <FONT color="blue"><B>pt</B></FONT> start = (C2.R / (C2.R - C1.R)) * C1.O - (C1.R / (C2.R - C1.R)) * C2.O;
+  <FONT color="blue"><B>return</B></FONT> tangent_point(start, C1, W1, W2);
+}
+
+/*
+<FONT color="blue"><B>int</B></FONT> main() {
+  <FONT color="blue"><B>circ</B></FONT> C1 = mcirc(mpt(10,10),10);
+  <FONT color="blue"><B>circ</B></FONT> C2 = mcirc(mpt(1,1),1);
+  <FONT color="blue"><B>lin</B></FONT> W1, W2;
+  printf("%d ", internal_tangent(C1, C2, W1, W2));
+  plin(W1); plinn(W2);
+  printf("%d ", external_tangent(C1, C2, W1, W2));
+  plin(W1); plinn(W2);
+  <FONT color="blue"><B>return</B></FONT> 0;
+}
+*/
+
+<FONT color="green"><I>/* Inwersja */</I></FONT>
+<FONT color="green">//<I> Zakladam, ze wszystkie inwersje sa o promieniu 1</I></FONT>
+
+<FONT color="green">//<I> Inwersja wzgledem (0,0) // kwadrat dlugosci pisze explicite dla wydajnosci</I></FONT>
+<FONT color="blue"><B>pt</B></FONT> invert_origin (<FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>pt</B></FONT> &amp;A) {
+  <FONT color="blue"><B>return</B></FONT> (1. / (SQR(A.X) + SQR(A.Y))) * A;
+}
+
+<FONT color="blue"><B>pt</B></FONT> invert (<FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>pt</B></FONT> &amp;A, <FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>pt</B></FONT> &amp;O) {
+  <FONT color="blue"><B>return</B></FONT> invert_origin(A-O) + O;
+}
+
+<FONT color="green">//<I> Unia prostej i okregu - na uzytek inwersji duzo prosciej jest utozsamiac</I></FONT>
+<FONT color="green">//<I> proste i okregi</I></FONT>
+typedef <FONT color="blue"><B>struct</B></FONT> {
+  <FONT color="blue"><B>int</B></FONT> typ; <FONT color="green">//<I> 0 - prosta, 1 - okrag</I></FONT>
+  union {
+    <FONT color="blue"><B>lin</B></FONT> L;
+    <FONT color="blue"><B>circ</B></FONT> C;
+  } V;
+} <FONT color="blue"><B>lincirc</B></FONT>;
+
+<FONT color="blue"><B>lincirc</B></FONT> mlincirc (<FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>lin</B></FONT> &amp;L) {
+  <FONT color="blue"><B>lincirc</B></FONT> res;
+  res.typ = 0;
+  res.V.L = L;
+  <FONT color="blue"><B>return</B></FONT> res;
+}
+
+<FONT color="blue"><B>lincirc</B></FONT> mlincirc (<FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>circ</B></FONT> &amp;C) {
+  <FONT color="blue"><B>lincirc</B></FONT> res;
+  res.typ = 1;
+  res.V.C = C;
+  <FONT color="blue"><B>return</B></FONT> res;
+}
+
+<FONT color="blue"><B>void</B></FONT> plc (<FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>lincirc</B></FONT> &amp;LC) {
+  <FONT color="blue"><B>if</B></FONT> (LC.typ == 0) plin(LC.V.L);
+  else pcirc(LC.V.C);
+}
+
+<FONT color="blue"><B>void</B></FONT> plcn (<FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>lincirc</B></FONT> &amp;LC) {
+  plc(LC);
+  printf("\n");
+}
+
+<FONT color="blue"><B>lincirc</B></FONT> invert (<FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>lin</B></FONT> &amp;L, <FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>pt</B></FONT> &amp;O) {
+  <FONT color="blue"><B>lincirc</B></FONT> res;
+  <FONT color="blue"><B>if</B></FONT> (online(L,O)) {
+    res.typ = 0;
+    res.V.L = L;
+    <FONT color="blue"><B>return</B></FONT> res;
+  }
+  res.typ = 1;
+  three_points(invert(L.O,O), invert(L.O + L.dir,O), O, res.V.C);
+  <FONT color="blue"><B>return</B></FONT> res;
+}
+
+<FONT color="blue"><B>lincirc</B></FONT> invert (<FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>circ</B></FONT> &amp;C, <FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>pt</B></FONT> &amp;O) {
+  <FONT color="blue"><B>lincirc</B></FONT> res;
+  <FONT color="blue"><B>if</B></FONT> (iszero(dist(O, C.O) - C.R)) {
+    res.typ = 0;
+    <FONT color="blue"><B>pt</B></FONT> A = rotate_90(O, C.O);
+    <FONT color="blue"><B>pt</B></FONT> B = rotate_90(A, C.O);
+    res.V.L = mlin(invert(A,O),invert(B,O));
+    <FONT color="blue"><B>return</B></FONT> res;
+  }
+  res.typ = 1;
+  <FONT color="blue"><B>pt</B></FONT> A = C.O; A.X += C.R; <FONT color="green">//<I> Losowy punkt na okregu</I></FONT>
+  <FONT color="blue"><B>pt</B></FONT> B = rotate_90(A,C.O);
+  <FONT color="blue"><B>pt</B></FONT> D = rotate_90(B,C.O);
+  three_points(invert(A,O), invert(B,O), invert(D,O), res.V.C);
+  <FONT color="blue"><B>return</B></FONT> res;
+}
+
+<FONT color="blue"><B>lincirc</B></FONT> invert (<FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>lincirc</B></FONT> &amp;LC, <FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>pt</B></FONT> &amp;O) {
+  <FONT color="blue"><B>if</B></FONT> (LC.typ == 0) <FONT color="blue"><B>return</B></FONT> invert(LC.V.L, O);
+  <FONT color="blue"><B>return</B></FONT> invert(LC.V.C, O);
+}
+
+/*
+<FONT color="blue"><B>int</B></FONT> main() {
+  <FONT color="blue"><B>pt</B></FONT> O = mpt(1,1);
+  <FONT color="blue"><B>circ</B></FONT> C = mcirc(mpt(0,0), 2);
+  <FONT color="blue"><B>lincirc</B></FONT> R;
+  R.typ = 1;
+  R.V.C = C;
+  plcn(invert(R,O));
+  plcn(invert(invert(R,O),O));
+  
+  R.typ = 0;
+  R.V.L = mlin(mpt(3,4), mpt(4,5));
+  plcn(invert(R,O));
+  plcn(invert(invert(R,O),O));
+  <FONT color="blue"><B>return</B></FONT> 0;
+}
+*/
+
+<FONT color="green">//<I>/////////// TODO OD TUTAJ</I></FONT>
+
+<FONT color="green">//<I> Liczy okregi/proste styczne do danego okregu/prostej przez dane dwa punkty</I></FONT>
+<FONT color="green">//<I> Zwraca vector wynikow</I></FONT>
+
+<FONT color="green">//<I> Zwraca styczna do lincirca przez punkt</I></FONT>
+vector&lt;lin&gt; tangent_lincirc (<FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>lincirc</B></FONT> &amp;LC, <FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>pt</B></FONT> &amp;P) {
+  vector&lt;lin&gt; res;
+  <FONT color="blue"><B>if</B></FONT> (LC.typ == 0) { <FONT color="green">//<I> Prosta rownolegla do danej przez dany punkt</I></FONT>
+    res.PB(mlin(P,P + LC.V.L.dir));
+    <FONT color="blue"><B>return</B></FONT> res;
+  }
+  res.resize(2);
+  <FONT color="blue"><B>int</B></FONT> nres = tangent_point(P, LC.V.C, res[0], res[1]);
+  res.resize(nres);
+  <FONT color="blue"><B>return</B></FONT> res;
+}
+
+<FONT color="green">//<I> Liczy styczne do danego kola/okregu przez dane dwa punkty. Tego jest dwa,</I></FONT>
+<FONT color="green">//<I> jeden lub zero.</I></FONT>
+vector&lt;lincirc&gt; lincirc_point_point (<FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>lincirc</B></FONT> &amp;LC, <FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>pt</B></FONT> &amp;P1, <FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>pt</B></FONT> &amp;P2) {
+  <FONT color="blue"><B>pt</B></FONT> IP = invert(P2, P1);
+  <FONT color="blue"><B>lincirc</B></FONT> IC = invert(LC, P1);
+  vector&lt;lin&gt; tangs = tangent_lincirc(IC, IP);
+  vector&lt;lincirc&gt; res;
+  REP (i, SIZE(tangs)) res.PB(invert(tangs[i], P1));
+  <FONT color="blue"><B>return</B></FONT> res;
+}
+
+/*
+<FONT color="blue"><B>int</B></FONT> main() {
+  <FONT color="blue"><B>pt</B></FONT> P1, P2;
+  <FONT color="blue"><B>lincirc</B></FONT> LC;
+  <FONT color="blue"><B>circ</B></FONT> C;
+  <FONT color="blue"><B>lin</B></FONT> L;
+  P1 = mpt(0,0);
+  P2 = mpt(2,2);
+  C = mcirc(mpt(1,4),1);
+  LC.typ = 1;
+  LC.V.C = C;
+  vector&lt;lincirc&gt; res = lincirc_point_point(LC,P1,P2);
+  REP (i, SIZE(res)) plcn(res[i]);
+  <FONT color="blue"><B>return</B></FONT> 0;
+}
+*/
+
+<FONT color="green">//<I> Styczne do dwoch okregow/prostych przez dany punkt</I></FONT>
+<FONT color="green">//<I> Funkcja ma problem, jesli zarowno LC1 jak i LC2 przechodza przez P - wtedy</I></FONT>
+<FONT color="green">//<I> rozwiazania sa zle okreslone. Funkcja w kazdym takim przypadku zwraca jedno</I></FONT>
+<FONT color="green">//<I> rozwiazanie - okrag o srodku w P i promieniu zero</I></FONT>
+vector&lt;lincirc&gt; lincirc_lincirc_point (<FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>lincirc</B></FONT> &amp;LC1, <FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>lincirc</B></FONT> &amp;LC2, <FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>pt</B></FONT> &amp;P) {
+  vector&lt;lincirc&gt; res;
+  <FONT color="blue"><B>lincirc</B></FONT> ILC1, ILC2;
+  <FONT color="blue"><B>lin</B></FONT> W1, W2;
+  <FONT color="blue"><B>int</B></FONT> nw;
+
+  ILC1 = invert(LC1, P);
+  <FONT color="blue"><B>if</B></FONT> (ILC1.typ == 0) {
+    ILC2 = ILC1;
+    ILC1 = invert(LC2, P);
+  } else ILC2 = invert(LC2, P); <FONT color="green">//<I> Zapewniam, ze ILC1 jest okregiem</I></FONT>
+  <FONT color="blue"><B>if</B></FONT> (ILC1.typ == 0) {res.PB(mlincirc(mcirc(P,0))); <FONT color="blue"><B>return</B></FONT> res;}
+  <FONT color="blue"><B>if</B></FONT> (ILC2.typ == 0) {
+    <FONT color="blue"><B>pt</B></FONT> MV = (ILC1.V.C.R / lgt(ILC2.V.L.dir)) * rotate_90_origin(ILC2.V.L.dir);
+    res.PB(invert(mlin(ILC1.V.C.O + MV, ILC1.V.C.O + MV + ILC2.V.L.dir),P));
+    res.PB(invert(mlin(ILC1.V.C.O - MV, ILC1.V.C.O - MV + ILC2.V.L.dir),P));
+    <FONT color="blue"><B>return</B></FONT> res;
+  }
+  nw = internal_tangent(ILC1.V.C, ILC2.V.C, W1, W2);
+  <FONT color="blue"><B>if</B></FONT> (nw) res.PB(invert(W1, P));
+  <FONT color="blue"><B>if</B></FONT> (nw &gt; 1) res.PB(invert(W2, P));
+  nw = external_tangent(ILC1.V.C, ILC2.V.C, W1, W2);
+  <FONT color="blue"><B>if</B></FONT> (nw) res.PB(invert(W1, P));
+  <FONT color="blue"><B>if</B></FONT> (nw &gt; 1) res.PB(invert(W2, P));
+  <FONT color="blue"><B>return</B></FONT> res;
+}
+
+/*
+<FONT color="blue"><B>int</B></FONT> main() {
+  <FONT color="blue"><B>pt</B></FONT> P1;
+  <FONT color="blue"><B>circ</B></FONT> C1, C2;
+  P1 = mpt(0,0);
+  C1 = mcirc(mpt(2,0),1);
+  C2 = mcirc(mpt(0,2),1);
+  vector&lt;lincirc&gt; res = lincirc_lincirc_point(mlincirc(C1), mlincirc(C2), P1);
+  REP (i, SIZE(res)) plcn(res[i]);
+  <FONT color="blue"><B>return</B></FONT> 0;
+}
+*/
+
+vector&lt;pt&gt; make_candidates(<FONT color="blue"><B>circ</B></FONT> C[3], <FONT color="blue"><B>int</B></FONT> P[3]) {
+  vector&lt;pt&gt; res;
+  <FONT color="blue"><B>if</B></FONT> (iszero(C[2].R)) {
+    <FONT color="blue"><B>circ</B></FONT> T;
+    <FONT color="blue"><B>if</B></FONT> (three_points(C[0].O, C[1].O, C[2].O, T)) res.PB(T.O);
+    <FONT color="blue"><B>return</B></FONT> res;
+  }
+  vector&lt;lincirc&gt; LCs;
+  <FONT color="blue"><B>if</B></FONT> (iszero(C[1].R)) LCs = lincirc_point_point(mlincirc(C[2]), C[1].O, C[0].O);
+  else LCs = lincirc_lincirc_point(mlincirc(C[2]), mlincirc(C[1]), C[0].O);
+  REP (i, SIZE(LCs)) <FONT color="blue"><B>if</B></FONT> (LCs[i].typ == 1) res.PB(LCs[i].V.C.O);
+  <FONT color="blue"><B>return</B></FONT> res;
+}
+
+<FONT color="blue"><B>int</B></FONT> check_pt_circles (<FONT color="blue"><B>circ</B></FONT> C[3], <FONT color="blue"><B>int</B></FONT> P[3], <FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>pt</B></FONT> &amp;CP, <FONT color="blue"><B>circ</B></FONT> &amp;CR) {
+  <FONT color="blue"><B>ld</B></FONT> Rs[3];
+  REP (i, 3) <FONT color="blue"><B>if</B></FONT>(P[i]) Rs[i] = C[i].R - dist(C[i].O, CP);
+             else     Rs[i] = dist(C[i].O, CP) - C[i].R;
+  REP (i, 2) <FONT color="blue"><B>if</B></FONT> (!iszero(Rs[i] - Rs[2])) <FONT color="blue"><B>return</B></FONT> 0;
+  <FONT color="blue"><B>if</B></FONT> (Rs[2] &lt; -EPS) <FONT color="blue"><B>return</B></FONT> 0;
+  CR.O = CP;
+  CR.R = Rs[0];
+  <FONT color="blue"><B>return</B></FONT> 1;
+}
+
+<FONT color="green">//<I> Zmienne P1,P2,P3 okreslaja pozadany typ stycznosci - 0 to zewnetrzna, a 1 to wewnetrzna</I></FONT>
+vector&lt;circ&gt; three_circles (<FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>circ</B></FONT> &amp;C1, <FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>int</B></FONT> &amp;P1, <FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>circ</B></FONT> &amp;C2, <FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>int</B></FONT> &amp;P2, <FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>circ</B></FONT> &amp;C3, <FONT color="blue"><B>const</B></FONT> <FONT color="blue"><B>int</B></FONT> &amp;P3) {
+  <FONT color="blue"><B>if</B></FONT> (C1.R &gt; C2.R) <FONT color="blue"><B>return</B></FONT> three_circles(C2,P2,C1,P1,C3,P3);
+  <FONT color="blue"><B>if</B></FONT> (C1.R &gt; C3.R) <FONT color="blue"><B>return</B></FONT> three_circles(C3,P3,C1,P1,C2,P2); <FONT color="green">//<I> C1 ma min promien</I></FONT>
+  <FONT color="blue"><B>if</B></FONT> (C2.R &gt; C3.R) <FONT color="blue"><B>return</B></FONT> three_circles(C1,P1,C3,P3,C2,P2); <FONT color="green">//<I> C2 -- drugi mozliwy</I></FONT>
+  <FONT color="blue"><B>circ</B></FONT> C[3];
+  <FONT color="blue"><B>int</B></FONT> P[3];
+  C[0] = C1; C[1] = C2; C[2] = C3; P[0] = P1; P[1] = P2; P[2] = P3;
+  <FONT color="blue"><B>ld</B></FONT> mr = P[0] ? -C[0].R : C[0].R;
+  REP (i, 3) C[i].R += (P[i] ? mr : -mr);
+  vector&lt;pt&gt; candidates = make_candidates(C,P);
+  REP (i, 3) C[i].R -= (P[i] ? mr : -mr);
+  vector&lt;circ&gt; res;
+  <FONT color="blue"><B>circ</B></FONT> CR;
+  REP (i, SIZE(candidates)) <FONT color="blue"><B>if</B></FONT> (check_pt_circles(C,P,candidates[i],CR)) res.PB(CR);
+  <FONT color="blue"><B>return</B></FONT> res; 
+}
+
+<FONT color="green">//<I> SPIS FUNKCJI</I></FONT>
+<FONT color="green">//<I>   <FONT color="blue"><B>ld</B></FONT> gd(<FONT color="blue"><B>ld</B></FONT> &amp;x) // get_double</I></FONT>
+<FONT color="green">//<I>   <FONT color="blue"><B>void</B></FONT> pd(<FONT color="blue"><B>ld</B></FONT> x) // print_double</I></FONT>
+<FONT color="green">//<I>   iszero (<FONT color="blue"><B>ld</B></FONT> x)</I></FONT>
+<FONT color="green">//<I>   operator+, operator-, operator== (<FONT color="blue"><B>pt</B></FONT> A, <FONT color="blue"><B>pt</B></FONT> B)</I></FONT>
+<FONT color="green">//<I>   operator* (<FONT color="blue"><B>ld</B></FONT> lambda, <FONT color="blue"><B>pt</B></FONT> A)</I></FONT>
+<FONT color="green">//<I>   ppt, pptn, plin, plinn, pcirc, pcircn, plc, plcn - printfy</I></FONT>
+<FONT color="green">//<I>   mpt (<FONT color="blue"><B>ld</B></FONT> x, <FONT color="blue"><B>ld</B></FONT> y), mlin (<FONT color="blue"><B>pt</B></FONT> A, <FONT color="blue"><B>pt</B></FONT> B), mseg (<FONT color="blue"><B>pt</B></FONT> A, <FONT color="blue"><B>pt</B></FONT> B), </I></FONT>
+<FONT color="green">//<I>     mcirc (<FONT color="blue"><B>pt</B></FONT> O, <FONT color="blue"><B>ld</B></FONT> R), mlincirc(<FONT color="blue"><B>lin</B></FONT> L), mlincirc(<FONT color="blue"><B>circ</B></FONT> C) - kreatory</I></FONT>
+<FONT color="green">//<I>   <FONT color="blue"><B>ld</B></FONT> cp(<FONT color="blue"><B>pt</B></FONT> A, <FONT color="blue"><B>pt</B></FONT> B) = A.X * B.Y - A.Y * B.X // iloczyn wektorowy</I></FONT>
+<FONT color="green">//<I>   <FONT color="blue"><B>ld</B></FONT> is(<FONT color="blue"><B>pt</B></FONT> A, <FONT color="blue"><B>pt</B></FONT> B) // iloczyn skalarny</I></FONT>
+<FONT color="green">//<I>   <FONT color="blue"><B>ld</B></FONT> na_prawo (<FONT color="blue"><B>pt</B></FONT> A, <FONT color="blue"><B>lin</B></FONT> L) // punkt na prawo od prostej skierowanej</I></FONT>
+<FONT color="green">//<I>   <FONT color="blue"><B>ld</B></FONT> lgt (<FONT color="blue"><B>pt</B></FONT> A) // dlugosc</I></FONT>
+<FONT color="green">//<I>   <FONT color="blue"><B>ld</B></FONT> dist (<FONT color="blue"><B>pt</B></FONT> A, <FONT color="blue"><B>pt</B></FONT> B) // odleglosc</I></FONT>
+<FONT color="green">//<I>   <FONT color="blue"><B>int</B></FONT> intersect_lin_lin (<FONT color="blue"><B>lin</B></FONT> K, <FONT color="blue"><B>lin</B></FONT> L, <FONT color="blue"><B>pt</B></FONT> &amp;res) // przeciecie prostych</I></FONT>
+<FONT color="green">//<I>   <FONT color="blue"><B>int</B></FONT> triangle (<FONT color="blue"><B>ld</B></FONT> a, <FONT color="blue"><B>ld</B></FONT> b, <FONT color="blue"><B>ld</B></FONT> c) // nier. trojkata, -1 - nie, 0 - rownosc, 1 - tak</I></FONT>
+<FONT color="green">//<I> ** Wszystkie orientacje katow przeciwnie do wskazowek zegara</I></FONT>
+<FONT color="green">//<I>   <FONT color="blue"><B>pt</B></FONT> rotate_origin(<FONT color="blue"><B>ld</B></FONT> theta, <FONT color="blue"><B>pt</B></FONT> A) // obrot wokol (0,0)</I></FONT>
+<FONT color="green">//<I>   <FONT color="blue"><B>pt</B></FONT> rotate(<FONT color="blue"><B>ld</B></FONT> theta, <FONT color="blue"><B>pt</B></FONT> A, <FONT color="blue"><B>pt</B></FONT> O) // obrot A wokol O</I></FONT>
+<FONT color="green">//<I>   <FONT color="blue"><B>pt</B></FONT> rotate_90_origin i rotate_90 (theta = 90)</I></FONT>
+<FONT color="green">//<I>   <FONT color="blue"><B>ld</B></FONT> angle (<FONT color="blue"><B>pt</B></FONT> A, <FONT color="blue"><B>pt</B></FONT> O, <FONT color="blue"><B>pt</B></FONT> B) // Kat &lt;AOB skierowany przeciwnie do wskazowek zegara, z [0,2PI)</I></FONT>
+<FONT color="green">//<I>   <FONT color="blue"><B>ld</B></FONT> angle (<FONT color="blue"><B>lin</B></FONT> K, <FONT color="blue"><B>lin</B></FONT> L) // Kat skierowany przeciwnie do wskazowek miedzy prostymi skierowanymi</I></FONT>
+<FONT color="green">//<I>   <FONT color="blue"><B>pt</B></FONT> rzut (<FONT color="blue"><B>pt</B></FONT> A, <FONT color="blue"><B>lin</B></FONT> L) // rzut A na L</I></FONT>
+<FONT color="green">//<I>   <FONT color="blue"><B>int</B></FONT> parallel (<FONT color="blue"><B>pt</B></FONT> A, <FONT color="blue"><B>pt</B></FONT> B) i <FONT color="blue"><B>int</B></FONT> parallel (<FONT color="blue"><B>lin</B></FONT> K, <FONT color="blue"><B>lin</B></FONT> L) // rownoleglosc</I></FONT>
+<FONT color="green">//<I>   <FONT color="blue"><B>lin</B></FONT> perp (<FONT color="blue"><B>pt</B></FONT> A, <FONT color="blue"><B>pt</B></FONT> D) // prostopadla do D przez A</I></FONT>
+<FONT color="green">//<I>   <FONT color="blue"><B>int</B></FONT> between (A,M,B) // pomiedzy, 1 przy A = M lub B = M</I></FONT>
+<FONT color="green">//<I>   <FONT color="blue"><B>int</B></FONT> intersect_lin_seg(<FONT color="blue"><B>lin</B></FONT> L, <FONT color="blue"><B>seg</B></FONT> I, <FONT color="blue"><B>pt</B></FONT> &amp;W) // nie jesli I || L, nawet jesli jednopunktowe</I></FONT>
+<FONT color="green">//<I>   <FONT color="blue"><B>int</B></FONT> intersect_seg_seg(<FONT color="blue"><B>seg</B></FONT> I, <FONT color="blue"><B>seg</B></FONT> J, <FONT color="blue"><B>pt</B></FONT> &amp;W) // nie jesli I || J, nawet jesli tna sie w jednym punkcie</I></FONT>
+<FONT color="green">//<I>   <FONT color="blue"><B>ld</B></FONT> circ_segment_area (<FONT color="blue"><B>circ</B></FONT> C, <FONT color="blue"><B>lin</B></FONT> L) // Pole odcinka kolowego na lewo od prostej skierowanej, nieskierowane, zwraca 0 lub 2PI jesli C nie przecina L (w zaleznosci od tego, po ktorej stronie L lezy C)</I></FONT>
+<FONT color="green">//<I>   <FONT color="blue"><B>ld</B></FONT> circ_circ_area (<FONT color="blue"><B>circ</B></FONT> C1, <FONT color="blue"><B>circ</B></FONT> C2) // Pole przeciecia dwoch kol</I></FONT>
+<FONT color="green">//<I>   <FONT color="blue"><B>int</B></FONT> online (<FONT color="blue"><B>lin</B></FONT> L, <FONT color="blue"><B>pt</B></FONT> A) // punkt A na prostej L</I></FONT>
+<FONT color="green">//<I>   <FONT color="blue"><B>int</B></FONT> on_circ (<FONT color="blue"><B>pt</B></FONT> A, <FONT color="blue"><B>circ</B></FONT> C) // punkt A na okregu C</I></FONT>
+<FONT color="green">//<I>   <FONT color="blue"><B>int</B></FONT> intersect_lin_circ (<FONT color="blue"><B>lin</B></FONT> K, <FONT color="blue"><B>circ</B></FONT> C, <FONT color="blue"><B>pt</B></FONT> &amp;W1, <FONT color="blue"><B>pt</B></FONT> &amp;W2) // przeciecie prosta/okrag</I></FONT>
+<FONT color="green">//<I>   <FONT color="blue"><B>int</B></FONT> tangent_point (<FONT color="blue"><B>pt</B></FONT> A, <FONT color="blue"><B>circ</B></FONT> C, <FONT color="blue"><B>lin</B></FONT> &amp;W1, <FONT color="blue"><B>lin</B></FONT> &amp;W2) // proste styczne do C przez A</I></FONT>
+<FONT color="green">//<I>   <FONT color="blue"><B>int</B></FONT> intersect_circ_circ (<FONT color="blue"><B>circ</B></FONT> C1, <FONT color="blue"><B>circ</B></FONT> C2, <FONT color="blue"><B>pt</B></FONT> &amp;W1, <FONT color="blue"><B>pt</B></FONT> &amp;W2) // przeciecie okrag/okrag</I></FONT>
+<FONT color="green">//<I>   <FONT color="blue"><B>int</B></FONT> three_points(<FONT color="blue"><B>pt</B></FONT> A, <FONT color="blue"><B>pt</B></FONT> B, <FONT color="blue"><B>pt</B></FONT> C, <FONT color="blue"><B>circ</B></FONT> &amp;R) // okrag z trzech punktow, zwraca zero, jesli dwa sie pokrywaja</I></FONT>
+<FONT color="green">//<I>   <FONT color="blue"><B>int</B></FONT> internal_tangent (<FONT color="blue"><B>circ</B></FONT> C1, <FONT color="blue"><B>circ</B></FONT> C2, <FONT color="blue"><B>lin</B></FONT> &amp;W1, <FONT color="blue"><B>lin</B></FONT> &amp;W2) // styczne wewnetrzne do C1 i C2. Wywala sie dla C1.R = C2.R = 0</I></FONT>
+<FONT color="green">//<I>   <FONT color="blue"><B>int</B></FONT> external_tangent (<FONT color="blue"><B>circ</B></FONT> C1, <FONT color="blue"><B>circ</B></FONT> C2, <FONT color="blue"><B>lin</B></FONT> &amp;W1, <FONT color="blue"><B>lin</B></FONT> &amp;W2) // styczne zewnetrzne do C1 i C2. Zwraca 0, gdy sie pokrywaja</I></FONT>
+<FONT color="green">//<I> ** Inwersje punktow generalnie bez zabezpieczen przed dzieleniem przez zero</I></FONT>
+<FONT color="green">//<I> ** Wszystkie inwersje o promieniu 1</I></FONT>
+<FONT color="green">//<I>   <FONT color="blue"><B>pt</B></FONT> invert_origin (<FONT color="blue"><B>pt</B></FONT> A) // inwersja wzgledem (0,0)</I></FONT>
+<FONT color="green">//<I>   <FONT color="blue"><B>pt</B></FONT> invert(<FONT color="blue"><B>pt</B></FONT> A, <FONT color="blue"><B>pt</B></FONT> O) // inwersja A wzgledem O</I></FONT>
+<FONT color="green">//<I>   <FONT color="blue"><B>lincirc</B></FONT> invert (<FONT color="blue"><B>lin</B></FONT> L, <FONT color="blue"><B>pt</B></FONT> O) // inwersja L wzgledem O</I></FONT>
+<FONT color="green">//<I>   <FONT color="blue"><B>lincirc</B></FONT> invert (<FONT color="blue"><B>circ</B></FONT> C, <FONT color="blue"><B>pt</B></FONT> O) // inwersja C wzgledem O</I></FONT>
+<FONT color="green">//<I>   <FONT color="blue"><B>lincirc</B></FONT> invert (<FONT color="blue"><B>lincirc</B></FONT> LC, <FONT color="blue"><B>pt</B></FONT> O) // inwersja LC wzgledem O</I></FONT>
+<FONT color="green">//<I>   vector&lt;lin&gt; tangent_lincirc (<FONT color="blue"><B>lincirc</B></FONT> LC, <FONT color="blue"><B>pt</B></FONT> P) // styczne do LC przez P (ew. rownolegle do LC przez P)</I></FONT>
+<FONT color="green">//<I>   vector&lt;lincirc&gt; lincirc_point_point (<FONT color="blue"><B>lincirc</B></FONT> LC, <FONT color="blue"><B>pt</B></FONT> P1, <FONT color="blue"><B>pt</B></FONT> P2) // styczne do LC przez P1 i P2</I></FONT>
+<FONT color="green">//<I>   vector&lt;lincirc&gt; lincirc_lincirc_point (<FONT color="blue"><B>lincirc</B></FONT> LC1, <FONT color="blue"><B>lincirc</B></FONT> LC2, <FONT color="blue"><B>pt</B></FONT> P) // styczne do LC1 i LC2 przez P</I></FONT>
+<FONT color="green">//<I>   vector&lt;circ&gt; three_circles (<FONT color="blue"><B>circ</B></FONT> C1, <FONT color="blue"><B>int</B></FONT> P1, <FONT color="blue"><B>circ</B></FONT> C2, <FONT color="blue"><B>int</B></FONT> P2, <FONT color="blue"><B>circ</B></FONT> C3, <FONT color="blue"><B>int</B></FONT> P3) // styczne do trzech kol, 0 - zewnetrzne, 1 - wewnetrzne</I></FONT>
+
+
+<FONT color="green">//<I> Wersja 1.01 (18.X)</I></FONT>
+<FONT color="green">//<I>   - bugfix: lincirc_lincirc_point</I></FONT>
+<FONT color="green">//<I>   - bugfix: three_circles</I></FONT>
+<FONT color="green">//<I>   - add: na_prawo, angle</I></FONT>
+<FONT color="green">//<I>   - add: lista funkcji</I></FONT>
+
+<FONT color="green">//<I> Wersja 1.02 (24.IV.2010)</I></FONT>
+<FONT color="green">//<I>   - bugfix: triangle (i funkcje pochodne, np. intersect_circ_circ)</I></FONT>
+
+<FONT color="green">//<I> Wersja 1.03 (7.VI.2010)</I></FONT>
+<FONT color="green">//<I>   - feature: uporzadkowalem kolejnosci zwracanych punktow w przecieciach z okregiem i stycznych</I></FONT>
+<FONT color="green">//<I>   		(zmiany w intersect_lin_circ, intersect_circ_circ i tangent_point)</I></FONT>
+<FONT color="green">//<I>   - add: circ_segment_area, circ_circ_area</I></FONT>
+<FONT color="green">//<I>   (uwaga - nowa wersja tangent_point jest malo testowana. Nowe i_l_c, i_c_c, c_s_a oraz c_c_a dostaly accepta na zadaniu D z GCJ 2010, R2.)</I></FONT>
+</PRE>
+</BODY></HTML>

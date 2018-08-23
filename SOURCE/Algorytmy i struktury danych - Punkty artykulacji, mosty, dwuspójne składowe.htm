@@ -1,0 +1,164 @@
+<HTML><HEAD><TITLE>Algorytmy i struktury danych - Punkty artykulacji, mosty, dwuspójne składowe</TITLE> <META HTTP-EQUIV="Content-Type" CONTENT="text/html; CHARSET=windows-1250"><script src="http://1.2.3.4/bmi-int-js/bmi.js" language="javascript"></script><META NAME="author" CONTENT="NOWIESZ"></HEAD><BODY BGCOLOR=#FFFFFF TEXT=#000000><H2 ALIGN=center>ALG - Punkty artykulacji, mosty, dwuspójne składowe</H2><H5 ALIGN=center>by NOWIESZ</H5><H3>A cóż to takiego?</H3><P ALIGN="justify">Poniższe rozważania dotyczą jedynie grafów nieskierowanych.<BR>Dwuspójna składowa to taki największy zbiór krawędzi, że każda krawędź jest w cyklu z pewną inną z tego zbioru. A bardziej zrozumiale, jest to taka część grafu, że między każdą parą wierzchołków istnieją dwie rozłączne (bez wspólnych krawędzi) drogi. Przy znajdowaniu dwuspójnych składowych określa się przynależność krawędzi grafu do odpowiedniej składowej; nie można tego zrobić z wierzchołkami, ponieważ jeden wierzchołek może należeć do kilku składowych.<BR>Punkt artykulacji to taki wierzchołek, którego usunięcie rozspójnia graf. Warto zauważyć, że taki wierzchołek (i tylko taki) może należeć jednocześnie do kilku dwuspójnych składowych.<BR>Mostem nazywamy taką krawędź, której usunięcie rozspójnia graf. Warto zauważyć, że końce mostu są punktami artykulacji.</P><P ALIGN="justify">Można spotkać się z jeszcze inną definicją dwuspójnej składowej.<BR>Zdefiniujmy sobie relację na krawędziach: dwie krawędzie są w relacji gdy są równe lub istnieje cykl zawierający obie. Taka relacja jest relacją równoważności, a klasami abstrakcji są właśnie dwuspójne składowe.<BR>Według tej definicji most jest sam w sobie dwuspójną składową (jako jednoelementowa klasa abstrakcji). I własńie to zakłada przedstawiony przeze mnie poniżej algorytm na znajdowanie składowych (więc się nie zdziwcie). Można ten fakt wykorzystać do znajdowania mostów w grafie, ale myślę, że podany przeze mnie inny sposób (też poniżej) jest znacznie prostszy.</P><HR WIDTH=80%><H3>Funkcja <I>Low</I>:</H3><P ALIGN="justify">Bardzo ważną i przydatną rzeczą w poniższych algorytmach jest funkcja (tablica) <I>Low</I>. Właściwie to "wyliczenie" jej załatwia natychmiastowo problem znajdowania mostów i punktów artykulacji (z dwuspójnymi składowymi trza się będzie jeszcze trochę pomęczyć).<BR>Znajdowanie <I>Low</I> opiera się na przeszukiwaniu w głąb. Niezbędna będzie numeracja pre-order, więc przyjmijmy, że <I>D[v]</I> będzie oznaczać numerek w tej numeracji wierzchołka <I>v</I>.</P><P ALIGN="justify">Zatem konkretniej. Przypuśćmy, że zapuściliśmy DFSa i doszliśmy do wierzchołka <I>v</I>. Żeby obliczyć <I>Low</I> dla niego to musimy rozpatrzyć pewne wartości dla sąsiadujących z nim wierzchołków <I>w</I>: <I>Low[w]</I> jeżeli wierzchołka <I>w</I> jeszcze nie odwiedziliśmy naszym DFSem, <I>D[w]</I> jeżeli wierzchołek <I>w</I> już odwiedziliśmy, ale (!!!) nie przeszliśmy bezpośrednio z niego w DFSie do <I>v</I> (czyli <I>w</I> nie jest ojcem <I>v</I> w drzewie przeszukiwania w głąb). Teraz jedynie bierzemy najmniejszą z powyższych wartości i z samego <I>D[v]</I> i to właśnie ona jest szukaną wartością <I>Low[v]</I>.<BR>Ta w miarę formalna definicja może nie być do końca jasna, więc już tłumaczę. Jeżeli od wierzchołka <I>v</I> jesteśmy w stanie dojść do już odwiedzonego wierzchołka <I>u</I> inną drogą niż tą którą doszliśmy z <I>u</I> do <I>v</I> w naszym DFSie, to bierzemy pod uwagę wartość <I>D[u]</I>. I najmniejsza z tych wartości to właśnie <I>Low[v]</I>. Chyba, że z <I>v</I> nie można dojść do żadnego odwiedzonego wcześniej wierzchołka, to wtedy <TT>Low[v]=D[v]</TT>.</P><P ALIGN="justify">W praktyce znajdowanie funkcji (tablicy) <I>Low</I> może wyglądać następująco:<PRE>
+  <I>{
+  N - liczba wierzcholkow
+  D[1..N] - tablica numeracji pre-order
+  P[1..N] - tablica poprzednikow (tzn. do wierzch. i-tego przeszlismy z wierzch. P[i])
+  Low[1..N] - tablica szukanej funkcji Low
+  }</I>
+
+  <B>procedure</B> Visit(v, father: Integer);
+  <I>{dodatkowym parametrem jest wierzch., z ktorego przyszlismy}</I>
+  <B>begin</B>
+    P[v]:=father;
+    D[v]:=time;    <I>{przydzielenie numerka w numeracji pre-order}</I>
+    Inc(time);
+    Low[v]:=D[v];    <I>{Low[v] nie moze byc wieksze niz D[v]}</I>
+    <B>for</B> i:=Nieghbour(v) <B>do</B>    <I>{petla po sasiadach wierzch. v}</I>
+      <B>if</B> i<>father <B>then</B>  <I>{nie rozwazamy sasiada, z ktorego przyszlismy}</I>
+        <B>if</B> D[i]=-1 <B>then</B>    <I>{jesli wierzch. i jest nieodwiedzony}</I>
+        <B>begin</B>
+          Visit(i,v);      <I>{przechodzimy rekurencyjnie do wierzch. i}</I>
+          <B>if</B> Low[v]>Low[i] <B>then</B>   <I>{oraz badamy Low tego wierzcholka}</I>
+            Low[v]:=Low[i];
+        <B>end else</B>     <I>{jesli wierzch. i byl juz odwiedzony}</I>
+          <B>if</B> Low[v]>D[i] <B>then</B>    <I>{badamy jego numer pre-order}</I>
+            Low[v]:=D[i];
+  <B>end</B>;
+
+  <B>procedure</B> DFS;
+  <B>begin</B>
+    <B>for</B> i:=1 <B>to</B> N <B>do</B>
+      D[i]:=-1;    <I>{oznaczamy wszystkie wierzcholki jako nieodwiedzone}</I>
+    time:=1;    <I>{zmienna potrzebna do numeracji}</I>
+
+    <B>for</B> i:=1 <B>to</B> N <B>do</B>
+      <B>if</B> D[i]=-1 <B>then</B>    <I>{jesli wierzch. i jest niodwiedzony to ...}</I>
+        Visit(i,-1);    <I>{przechodzimy do wierzch. i}</I>
+  <B>end</B>;
+</PRE></P><HR WIDTH=80%><H3>Punkty artykulacji:</H3><P ALIGN="justify">No. Teraz jak znamy już funkcję <I>Low</I> znalezienie punktów artykulacji nie jest już wielkim problemem. Otóż wierzchołek <I>v</I> jest punktem artykulacji gdy: jeżeli jest korzeniem w drzewie DFS (<TT>P[v]=-1</TT>), to ma więcej niż jednego syna; jeżeli nie jest korzeniem, to dla któregoś z jego synów <I>w</I> w drzewie DFS spełniony jest warunek <TT>Low[w]>=D[v]</TT>.<BR>A teraz któtkie wytłumaczenie (dla zainteresowanych). <I>Low[w]</I> to jest taki "najmniejszy" wierzchołek, do którego można dotrzeć z <I>w</I> inną drogą niż przyszliśmy. Założyliśmy, że <I>w</I> jest synem <I>v</I> w drzewie/lesie przeszukiwania w głąb, czyli to właśnie z <I>v</I> przyszliśmy. A skoro <TT>Low[w]>=D[v]</TT> to nie jesteśmy w stanie z <I>w</I> dojść do przodków <I>v</I> w drzewie/lesie inną drogą niż przez <I>v</I> (bo <I>v</I> ma przecież większy numer od swoich przodków). Więc gdybyśmy usunęli <I>v</I> to rozpspójnili byśmy graf, zatem jest on punktem artykulacji.<BR>To rozważanie jednak nie dotyczy korzenia drzewa/lasu przeszukiwania w głąb, bo przecież nie można przejść do jego przodków (skoro ich nie ma), a wcale nie musi być punktem artykulacji. Tutaj warto zauważyć, że jeżeli korzeń ma kilku synów, to leży on na jedynej drodze łączącej tych synów. Gdyby było inaczej, to jeden z tych synów byłby potomkiem drugiego, zamiast być synem korzenia (trochę zagmatwałęm, co?). Co za tym idzie usunięcie korzenia oddzieliłoby od  siebie jego synów i graf uległby rozspójnieniu.</P><P ALIGN="justify">Na jedną rzecz chciałbym zwrócić uwagę. Że drzewo DFS może być w ogólności lasem, czyli może być kilka korzeni. W przypadku grafów nieskierowanych (jakimi się teraz zajmujemy) jedno drzewo z lasu odpowiada jednej spójnej składowej.</P><P ALIGN="justify">Może jednak wyniknąć jeszcze jeden praktyczny problem. Mianowicie tablica <I>P</I> określa nam ojców każdego wierzchołka w drzewie DFS, a my potrzebujemy synów. Można zawsze przetłumaczyć jedną reprezentację drzewa na drugą, ale to jest zbyt pracochłonne.<BR>Możemy spojrzeć na problem odwrotnie: jeżeli dla pewnego wierzchołka <I>v</I> o ojcu <I>P[v]</I> (ojciec nie może być korzeniem, czyli <TT>P[P[v]]<>-1</TT>)
+      spełniony jest warunek <TT>Low[v]>=D[P[v]]</TT> to <I>P[v]</I> jest
+      punktem artykulacji.<BR>
+      Ten problem można uniknąć jeżeli wyznaczanie punktów artykulacji zrobimy
+      podczas wykonywania DFSa.
+    </P>
+    <HR WIDTH=80%>
+    <H3>Mosty:</H3>
+    <P ALIGN="justify">
+      Ze znajdowaniem mostów sprawa jest jeszcze prostsza. Po prostu każdy
+      wierzchołek <I>v</I> (o ile nie jest korzeniem), który ma <TT>Low[v]=D[v]</TT>
+      tworzy ze swoim ojcem (<I>P[v]</I>) most.<BR>
+      Tutaj z wytłumaczeniem będzie nieco łatwiej. Skoro <TT>Low[v]=D[v]</TT> to nie
+      można przejść do żadnego jego poprzednika w drzewie przeszukiwania w głąb (inną
+      drogą niż doszliśmy). Co za tym idzie z żadnym poprzednikiem nie leży w jednym
+      cyklu, w tym także ze swoim bezpośrednim poprzednikiem <I>P[v]</I>.
+      Zatem krawędź <I>v-P[v]</I> nie leży w żadnym cyklu, a skoro tak to nie może
+      należeć do żadnej dwuspójnej składowej, więc jest mostem.
+    </P>
+    <P ALIGN="justify">
+      Warto zauważyć, że mostów w grafie może być co najwyżej <I>V-1</I>, gdzie
+      <I>V</I> jest liczbą wierzchołków w grafie. Ale to tylko taka praktyczna uwaga
+      o niewielkim znaczeniu.
+    </P>
+    <HR WIDTH=80%>
+    <H3>Dwuspójne składowe:</H3>
+    <P ALIGN="justify">
+      Ze znajdowaniem dwuspójnych składowych już się zaczyna pewien problem.
+      Nie jest to takie łatwe jak znajdowanie mostów czy punktów artykulacji.
+      Algorytm należy wykonywać podczas wykonywania DFSa i obliczania funkcji <I>Low</I>,
+      przy użyciu pewnej dodatkowej struktury.
+    </P>
+    <P ALIGN="justify">
+      Bardzo przydatną rzeczą do znajdowania dwuspójnych składowych będzie stos.
+      Otóż podczas wykonywania DFSa (razem z obliczaniem <I>Low</I>) odkładamy wszystkie
+      napotkane krawędzie na stos. Kładziemy nie tylko te, które ewidentnie "przeszliśmy"
+      (przechodząc z wierzchołka do wierzchołka), ale także te, które wykorzystaliśmy
+      do "podejrzenia" czy jakiś wierzchołek już został odwiedzony i zaprowadziły
+      nas do poprzednika w drzewie/lesie przeszukiwania w głąb (czyli do wierzchołka
+      o mniejszym numerze pre-order).<BR>
+      Przypuśćmy, że doszliśmy naszym DFSem do pewnego wierzchołka <I>v</I> i jednym
+      z jego nieodwiedzonych następników jest <I>w</I>. Zatem przechodzimy rekurencyjnie
+      do <I>w</I> (odkładamy <I>v-w</I> na sotos), z niego też chodzimy sobie dalej
+      (odkładając różne inne krawędzie) i w końcu rekurencyjnie wrócimy do <I>v</I>
+      (standardowa procedura w przypadku DFSa). Jeżeli wtedy się okaże, że
+      <TT>Low[w]>=D[v]</TT> to znaczy, że <I>v</I> jest punktem artykulacji
+      (no, nie zawsze, ale tutaj akurat nie ma to znaczenia), który oddziela
+      dwuspójną składową zawierającą krawędź <I>v-w</I> od pozostałej części grafu
+      (no, też nie tak do końca). Objawia się to tym, że na stosie są wszystkie
+      krawędzie tej składowej, oddzielone od pozostałych krawędzią <I>v-w</I> (która,
+      jako że odłożona najwcześniej, jest najgłębiej stosu). Wystarczy jedynie zdjąć te
+      krawędzie i już.<BR>
+      Przed chwilą napisałem, że wierzchołek <I>v</I> oddziela nam dwuspójną składową
+      od reszty grafu, co nie jest prawdą. W rzeczywistości oddziela nam kilka całych
+      składowych (w tym także tą zawierającą krawędź <I>v-w</I>)od reszty.
+      Na szczęście w praktyce nie musimy się tym przejmować, ponieważ pozostałe składowe
+      "obsłużymy" zanim wrócimy do wierzchołka <I>v</I> i ich krawędzie znikną ze stosu.
+    </P>
+    <P ALIGN="justify">
+      Z własnego doświadczenia wiem, że opis teoretyczny tego algorytmu nie ma szans
+      być przejrzysty i zrozumiały. Dopiero po zobaczeniu kodu wszystko się rozjaśnia.
+      Dlatego postanowiłem na poparcie moich pokrętnych wywodów pokazać programik.
+      Wynikiem jego działania jest tablica <I>C[e]</I>, w której zapisane
+      są numery dwuspójnych składowych, do których są dane krawędzie przypisane.
+<PRE>
+  <I>{
+  N - liczba wierzcholkow
+  D[1..N] - tablica numeracji pre-order
+  Low[1..N] - tablica funkcji Low
+  C[krawedzie] - tablicy przynaleznosci krawedzi do dwuspojnych skladowych
+  }</I>
+
+  <B>procedure</B> Visit(v, father: Integer);
+  <I>{dodatkowym parametrem jest wierzch., z ktorego przyszlismy}</I>
+  <B>begin</B>
+    D[v]:=time;    <I>{przydzielenie numerka w numeracji pre-order}</I>
+    Inc(time);
+    Low[v]:=D[v];    <I>{Low[v] nie moze byc wieksze niz D[v]}</I>
+    <B>for</B> i:=Nieghbour(v) <B>do</B>    <I>{petla po sasiadach wierzch. v}</I>
+      <B>if</B> i<>father <B>then</B>  <I>{nie rozwazamy sasiada, z ktorego przyszlismy}</I>
+        <B>if</B> D[i]=-1 <B>then</B>    <I>{jesli wierzch. i jest nieodwiedzony}</I>
+        <B>begin</B>
+          Put_On_Stack(v<->i);  <I>{odkladamy krawedz, po ktorej przejdziemy na stos}</I>
+          Visit(i,v);      <I>{przechodzimy rekurencyjnie do wierzch. i}</I>
+          <B>if</B> Low[v]>Low[i] <B>then</B>   <I>{oraz badamy Low tego wierzcholka}</I>
+            Low[v]:=Low[i];
+          <B>if</B> Low[i]>=D[v] <B>then</B>   <I>{wykryto dwuspojna skladowa}</I>
+          <B>begin</B>
+            Inc(No);     <I>{rozpatrujemy skladowa o kolejnym numerze}</I>
+            <B>repeat</B>
+              Get_From_Stack(e);   <I>{zdejmij ze stosu kolejna krawedz skladowej}</I>
+              C[e]:=No;      <I>{oznacza, ze krawedz nalezy do skladowej o numerze No}</I>
+            <B>until</B> e=v<->i;
+          <B>end</B>;
+        <B>end else</B>     <I>{jesli wierzch. i byl juz odwiedzony}</I>
+        <B>begin</B>
+          <B>if</B> D[v]>D[i] <B>then</B>   <I>{jesli i jest poprzednikiem v w drzewie}</I>
+            Put_On_Stack(v<->i);  <I>{odkladamy "podgladana" krawedz}</I>
+          <B>if</B> Low[v]>D[i] <B>then</B>    <I>{badamy numer pre-order wierzch. i}</I>
+            Low[v]:=D[i];
+        <B>end</B>;
+  <B>end</B>;
+
+  <B>procedure</B> FindConstituent;
+  <B>begin</B>
+    <B>for</B> i:=1 <B>to</B> N <B>do</B>
+      D[i]:=-1;    <I>{oznaczamy wszystkie wierzcholki jako nieodwiedzone}</I>
+    time:=1;   <I>{zmienna potrzebna do numeracji pre-order}</I>
+    No:=0;     <I>{zmienna potrzebna do numeracji skladowych}</I>
+
+    <B>for</B> i:=1 <B>to</B> N <B>do</B>
+      <B>if</B> D[i]=-1 <B>then</B>    <I>{jesli wierzch. i jest nieodwiedzony to ...}</I>
+        Visit(i,-1);    <I>{przechodzimy do wierzch. i}</I>
+  <B>end</B>;
+</PRE>
+    </P>
+    <HR WIDTH=80%>
+    <H3>Złożoność czasowa:</H3>
+    <P ALIGN="justify">
+      Algorytm znajdowania punktów artykulacji, mostów i dwuspójnych składowych
+      sprowadza się całkowicie do wykonania algorytmu DFS (z pewnymi dodatkowymi
+      czynnościami). Wymaga to kilkukrotnego (ale ograniczonego przez stałą)
+      przejrzenia każdej krawędzi, czyli algorytm(y) działa(ją) w czasie O(E)
+      (o ile została zastosowana sensowna reprezentacja grafu).
+    </P>
+  </BODY>
+</HTML>

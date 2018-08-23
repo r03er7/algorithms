@@ -1,0 +1,1 @@
+const ull mask32 = ((1ULL << 32) - 1);
